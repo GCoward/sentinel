@@ -13,11 +13,30 @@ describe("Sentinel dashboard", () => {
       includedImpacts: ["critical", "serious"],
     });
 
+    cy.intercept({ method: "POST", url: "**/api/users" }).as("inviteUser");
     cy.contains("button", "Invite teammate").click();
-    cy.get('input[name="name"]').type("Taylor Brooks");
-    cy.get('input[name="email"]').type("taylor@sentinel.app");
-    cy.get('select[name="role"]').select("Support");
-    cy.contains("button", "Send invite").click();
-    cy.contains("Taylor Brooks").should("be.visible");
+    cy.get('[role="dialog"]').should("be.visible");
+
+    cy.get('[role="dialog"]').within(() => {
+      cy.get('input[name="name"]')
+        .should("be.visible")
+        .click({ force: true })
+        .clear({ force: true })
+        .type("Taylor Brooks", { delay: 20, force: true })
+        .should("have.value", "Taylor Brooks");
+
+      cy.get('input[name="email"]')
+        .should("be.visible")
+        .click({ force: true })
+        .clear({ force: true })
+        .type("taylor@sentinel.app", { delay: 20, force: true })
+        .should("have.value", "taylor@sentinel.app");
+
+      cy.get('select[name="role"]').select("Support");
+      cy.contains("button", "Send invite").should("be.enabled").click();
+    });
+
+    cy.wait("@inviteUser", { timeout: 20000 }).its("response.statusCode").should("equal", 201);
+    cy.contains("Taylor Brooks", { timeout: 10000 }).should("be.visible");
   });
 });
