@@ -1,7 +1,7 @@
 import "server-only";
 
 import { SignJWT, jwtVerify } from "jose";
-import { createHash, timingSafeEqual } from "node:crypto";
+import { scryptSync, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import type { LoginInput } from "@/lib/validators";
@@ -15,13 +15,14 @@ if (process.env.NODE_ENV === "production" && !secretValue) {
 }
 
 const secret = new TextEncoder().encode(secretValue ?? "sentinel-demo-secret");
+const demoPasswordSalt = "sentinel-demo-salt";
 
 function hashValue(value: string) {
-  return createHash("sha256").update(value).digest("hex");
+  return scryptSync(value, demoPasswordSalt, 64);
 }
 
-function secureEquals(left: string, right: string) {
-  return timingSafeEqual(Buffer.from(left, "hex"), Buffer.from(right, "hex"));
+function secureEquals(left: Buffer, right: Buffer) {
+  return timingSafeEqual(left, right);
 }
 
 const demoUser = {
