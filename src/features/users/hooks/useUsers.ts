@@ -24,7 +24,7 @@ export function useCreateTeamMember() {
 
       const previousTeam = queryClient.getQueryData<TeamMember[]>(teamQueryKey) ?? [];
       const optimisticMember: TeamMember = {
-        id: Date.now(),
+        id: crypto.randomUUID(),
         status: "Invited",
         lastActive: "Just now",
         ...newMember,

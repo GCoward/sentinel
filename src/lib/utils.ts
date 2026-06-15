@@ -18,6 +18,10 @@ export function formatCurrency(value: number) {
 }
 
 export function formatMetricChange(value: number) {
+  if (!Number.isFinite(value)) {
+    return "∞";
+  }
+
   const prefix = value > 0 ? "+" : "";
   return `${prefix}${value.toFixed(1)}%`;
 }

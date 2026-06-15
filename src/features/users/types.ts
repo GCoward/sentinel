@@ -1,5 +1,5 @@
 export interface TeamMember {
-  id: number;
+  id: number | string;
   name: string;
   email: string;
   role: "Admin" | "Analyst" | "Support";

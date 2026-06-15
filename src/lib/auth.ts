@@ -1,7 +1,7 @@
 import "server-only";
 
 import { SignJWT, jwtVerify } from "jose";
-import { scryptSync, timingSafeEqual } from "node:crypto";
+import { randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import type { LoginInput } from "@/lib/validators";
@@ -15,20 +15,22 @@ if (process.env.NODE_ENV === "production" && !secretValue) {
 }
 
 const secret = new TextEncoder().encode(secretValue ?? "sentinel-demo-secret");
-const demoPasswordSalt = "sentinel-demo-salt";
 
-function hashValue(value: string) {
-  return scryptSync(value, demoPasswordSalt, 64);
+function hashValue(value: string, salt: Buffer) {
+  return scryptSync(value, salt, 64);
 }
 
 function secureEquals(left: Buffer, right: Buffer) {
   return timingSafeEqual(left, right);
 }
 
+const demoPasswordSalt = randomBytes(16);
+
 const demoUser = {
   id: "operator-1",
   email: "admin@sentinel.app",
-  passwordHash: hashValue("Sentinel123!"),
+  passwordHash: hashValue("Sentinel123!", demoPasswordSalt),
+  passwordSalt: demoPasswordSalt,
   name: "Avery Lane",
   role: "Platform Admin",
 };
@@ -41,7 +43,7 @@ export interface Session {
 }
 
 export async function authenticateUser(credentials: LoginInput): Promise<Session | null> {
-  const passwordHash = hashValue(credentials.password);
+  const passwordHash = hashValue(credentials.password, demoUser.passwordSalt);
 
   if (
     credentials.email !== demoUser.email ||

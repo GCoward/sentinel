@@ -2,7 +2,7 @@ import type { AnalyticsSnapshot, MetricCard, TrendPoint } from "@/features/analy
 
 function calculateChange(current: number, previous: number) {
   if (previous === 0) {
-    return 0;
+    return current === 0 ? 0 : Number.POSITIVE_INFINITY;
   }
 
   return ((current - previous) / previous) * 100;
