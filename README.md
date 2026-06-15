@@ -33,6 +33,8 @@ Sentinel is a compact enterprise SaaS admin and analytics platform built with th
 - `npm run test`
 - `npm run cypress:run`
 
+Set `SENTINEL_JWT_SECRET` before running the production build or server.
+
 ## Testing
 
 - Jest unit tests live in `src/__tests__/unit`.

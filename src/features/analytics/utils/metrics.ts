@@ -1,7 +1,7 @@
 import type { AnalyticsSnapshot, MetricCard, TrendPoint } from "@/features/analytics/types";
 
 function calculateChange(current: number, previous: number) {
-  if (!previous) {
+  if (previous === 0) {
     return 0;
   }
 

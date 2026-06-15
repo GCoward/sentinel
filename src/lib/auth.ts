@@ -1,18 +1,33 @@
+import "server-only";
+
 import { SignJWT, jwtVerify } from "jose";
+import { createHash, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import type { LoginInput } from "@/lib/validators";
 
 export const SESSION_COOKIE = "sentinel_session";
 
-const secret = new TextEncoder().encode(
-  process.env.SENTINEL_JWT_SECRET ?? "sentinel-demo-secret",
-);
+const secretValue = process.env.SENTINEL_JWT_SECRET;
+
+if (process.env.NODE_ENV === "production" && !secretValue) {
+  throw new Error("SENTINEL_JWT_SECRET must be set in production.");
+}
+
+const secret = new TextEncoder().encode(secretValue ?? "sentinel-demo-secret");
+
+function hashValue(value: string) {
+  return createHash("sha256").update(value).digest("hex");
+}
+
+function secureEquals(left: string, right: string) {
+  return timingSafeEqual(Buffer.from(left, "hex"), Buffer.from(right, "hex"));
+}
 
 const demoUser = {
   id: "operator-1",
   email: "admin@sentinel.app",
-  password: "Sentinel123!",
+  passwordHash: hashValue("Sentinel123!"),
   name: "Avery Lane",
   role: "Platform Admin",
 };
@@ -25,9 +40,11 @@ export interface Session {
 }
 
 export async function authenticateUser(credentials: LoginInput): Promise<Session | null> {
+  const passwordHash = hashValue(credentials.password);
+
   if (
     credentials.email !== demoUser.email ||
-    credentials.password !== demoUser.password
+    !secureEquals(passwordHash, demoUser.passwordHash)
   ) {
     return null;
   }
