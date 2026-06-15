@@ -3,9 +3,11 @@
 import dynamic from "next/dynamic";
 import { Card } from "@/components/ui/card";
 import { MetricsGrid } from "@/features/analytics/components/metrics-grid";
+import type { AnalyticsSnapshot } from "@/features/analytics/types";
 import { OnboardingForm } from "@/features/onboarding/components/onboarding-form";
 import { useAnalyticsSnapshot } from "@/features/analytics/hooks/useAnalytics";
 import { TeamCard } from "@/features/users/components/team-card";
+import type { TeamMember } from "@/features/users/types";
 
 const AnalyticsChart = dynamic(
   () =>
@@ -22,8 +24,14 @@ const AnalyticsChart = dynamic(
   },
 );
 
-export function DashboardOverview() {
-  const { data, isLoading, error } = useAnalyticsSnapshot();
+export function DashboardOverview({
+  initialAnalytics,
+  initialTeam,
+}: {
+  initialAnalytics: AnalyticsSnapshot;
+  initialTeam: TeamMember[];
+}) {
+  const { data, isLoading, error } = useAnalyticsSnapshot(initialAnalytics);
 
   if (isLoading) {
     return <p className="text-sm text-slate-400">Loading analytics...</p>;
@@ -43,7 +51,7 @@ export function DashboardOverview() {
     <div className="space-y-6">
       <MetricsGrid metrics={data.metrics} />
       <div className="grid gap-6 xl:grid-cols-[1.4fr_0.9fr]">
-        <Card>
+        <Card className="min-w-0">
           <div className="mb-6">
             <p className="text-sm uppercase tracking-[0.24em] text-sky-300">Dynamic visualisation</p>
             <h2 className="mt-2 text-2xl font-semibold text-white">Adoption and revenue momentum</h2>
@@ -55,7 +63,7 @@ export function DashboardOverview() {
         </Card>
         <OnboardingForm />
       </div>
-      <TeamCard previewCount={4} />
+      <TeamCard initialTeam={initialTeam} previewCount={4} />
     </div>
   );
 }

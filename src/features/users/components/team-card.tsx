@@ -6,11 +6,17 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
 import { useCreateTeamMember, useTeamMembers } from "@/features/users/hooks/useUsers";
-import type { NewTeamMember } from "@/features/users/types";
+import type { NewTeamMember, TeamMember } from "@/features/users/types";
 import { createUserSchema } from "@/lib/validators";
 
-export function TeamCard({ previewCount }: { previewCount?: number }) {
-  const { data = [], isLoading, error } = useTeamMembers();
+export function TeamCard({
+  initialTeam,
+  previewCount,
+}: {
+  initialTeam?: TeamMember[];
+  previewCount?: number;
+}) {
+  const { data = [], isLoading, error } = useTeamMembers(initialTeam);
   const createMember = useCreateTeamMember();
   const [isOpen, setIsOpen] = useState(false);
   const [formError, setFormError] = useState("");

@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { Card } from "@/components/ui/card";
 import { MetricsGrid } from "@/features/analytics/components/metrics-grid";
 import { useAnalyticsSnapshot } from "@/features/analytics/hooks/useAnalytics";
+import type { AnalyticsSnapshot } from "@/features/analytics/types";
 
 const AnalyticsChart = dynamic(
   () =>
@@ -13,8 +14,8 @@ const AnalyticsChart = dynamic(
   { ssr: false },
 );
 
-export function AnalyticsPanel() {
-  const { data, isLoading, error } = useAnalyticsSnapshot();
+export function AnalyticsPanel({ initialAnalytics }: { initialAnalytics: AnalyticsSnapshot }) {
+  const { data, isLoading, error } = useAnalyticsSnapshot(initialAnalytics);
 
   if (isLoading) {
     return <p className="text-sm text-slate-400">Loading analytics...</p>;
@@ -33,7 +34,7 @@ export function AnalyticsPanel() {
   return (
     <div className="space-y-6">
       <MetricsGrid metrics={data.metrics} />
-      <Card>
+      <Card className="min-w-0">
         <div className="mb-6">
           <p className="text-sm uppercase tracking-[0.24em] text-sky-300">Analytics drilldown</p>
           <h1 className="mt-2 text-3xl font-semibold text-white">Performance trends</h1>

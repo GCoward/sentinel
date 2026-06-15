@@ -6,10 +6,11 @@ import type { NewTeamMember, TeamMember } from "@/features/users/types";
 
 export const teamQueryKey = ["team", "members"] as const;
 
-export function useTeamMembers() {
+export function useTeamMembers(initialData?: TeamMember[]) {
   return useQuery({
     queryKey: teamQueryKey,
     queryFn: fetchTeamMembers,
+    initialData,
   });
 }
 

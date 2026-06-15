@@ -1,23 +1,11 @@
-import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 import { Suspense } from "react";
 import { AnalyticsPanel } from "@/features/analytics/components/analytics-panel";
-import { analyticsQueryKey } from "@/features/analytics/hooks/useAnalytics";
 import { getAnalyticsSnapshot } from "@/features/analytics/services/snapshot";
-import { makeQueryClient } from "@/lib/query-client";
 
 async function AnalyticsContent() {
-  const queryClient = makeQueryClient();
+  const initialAnalytics = await getAnalyticsSnapshot();
 
-  await queryClient.prefetchQuery({
-    queryKey: analyticsQueryKey,
-    queryFn: getAnalyticsSnapshot,
-  });
-
-  return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <AnalyticsPanel />
-    </HydrationBoundary>
-  );
+  return <AnalyticsPanel initialAnalytics={initialAnalytics} />;
 }
 
 export default function AnalyticsPage() {
