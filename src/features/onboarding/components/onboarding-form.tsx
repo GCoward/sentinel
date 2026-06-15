@@ -161,7 +161,7 @@ export function OnboardingForm() {
           disabled={stepIndex === 0}
           onClick={() => {
             setError("");
-            setStepIndex((current) => Math.max(current - 1, 0));
+            setStepIndex((current) => current - 1);
           }}
           variant="secondary"
         >

@@ -1,5 +1,5 @@
 import Database from "better-sqlite3";
-import { and, asc, desc, eq, sql } from "drizzle-orm";
+import { asc, desc, eq, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import { mkdirSync } from "node:fs";
 import path from "node:path";
@@ -83,7 +83,7 @@ export async function createTeamMember(input: NewTeamMemberInput) {
   const [existingMember] = await db
     .select({ id: teamMembers.id })
     .from(teamMembers)
-    .where(and(eq(teamMembers.email, input.email)));
+    .where(eq(teamMembers.email, input.email));
 
   if (existingMember) {
     throw new Error("EMAIL_EXISTS");
