@@ -36,7 +36,10 @@ export function TeamCard({
     const parsed = createUserSchema.safeParse(values);
 
     if (!parsed.success) {
-      setFormError(parsed.error.issues[0]?.message ?? "Provide valid teammate details.");
+      setFormError(
+        parsed.error.issues[0]?.message ??
+          "Please check the teammate information and try again.",
+      );
       return;
     }
 

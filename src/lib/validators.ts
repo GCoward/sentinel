@@ -21,7 +21,7 @@ export const onboardingSchemas = [
   z.object({
     primaryGoal: z
       .string()
-      .min(12, "Describe the primary success metric for this rollout."),
+      .min(12, "Primary goal must be at least 12 characters."),
     dataResidency: z.enum(["US", "EU", "APAC"]),
   }),
   z.object({
